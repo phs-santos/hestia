@@ -4,7 +4,6 @@ import * as schema from './schema';
 import { config } from '../config/config';
 import { logger } from '../utils/consoleLogger';
 
-
 const { Pool } = pg;
 
 const pool = new Pool({
