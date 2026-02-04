@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
-import { SplashScreen } from "@/components/ui/SplashScreen";
+import { SplashScreen } from "@/components/layout/SplashScreen";
 import { useState } from "react";
 import AppRoutes from "./AppRoutes";
 

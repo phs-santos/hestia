@@ -1,5 +1,12 @@
 import { api, handleApiError } from "@/lib/api";
 
+// Interface para o formato padrão de resposta do backend
+export interface ApiResponse<T> {
+	data: T;
+	error: boolean;
+	message?: string;
+}
+
 // Serviço base genérico para evitar duplicação de código
 export function createBaseService<T, CreateDTO, UpdateDTO = Partial<CreateDTO>>(
 	endpoint: string
@@ -7,8 +14,8 @@ export function createBaseService<T, CreateDTO, UpdateDTO = Partial<CreateDTO>>(
 	return {
 		getAll: async (): Promise<T[]> => {
 			try {
-				const response = await api.get<T[]>(endpoint);
-				return response.data;
+				const response = await api.get<ApiResponse<T[]>>(endpoint);
+				return response.data.data;
 			} catch (error) {
 				throw new Error(handleApiError(error));
 			}
@@ -16,8 +23,8 @@ export function createBaseService<T, CreateDTO, UpdateDTO = Partial<CreateDTO>>(
 
 		getById: async (id: string): Promise<T> => {
 			try {
-				const response = await api.get<T>(`${endpoint}${id}`);
-				return response.data;
+				const response = await api.get<ApiResponse<T>>(`${endpoint}/${id}`);
+				return response.data.data;
 			} catch (error) {
 				throw new Error(handleApiError(error));
 			}
@@ -25,8 +32,8 @@ export function createBaseService<T, CreateDTO, UpdateDTO = Partial<CreateDTO>>(
 
 		create: async (data: CreateDTO): Promise<T> => {
 			try {
-				const response = await api.post<T>(endpoint, data);
-				return response.data;
+				const response = await api.post<ApiResponse<T>>(endpoint, data);
+				return response.data.data;
 			} catch (error) {
 				throw new Error(handleApiError(error));
 			}
@@ -34,8 +41,8 @@ export function createBaseService<T, CreateDTO, UpdateDTO = Partial<CreateDTO>>(
 
 		update: async (id: string, data: UpdateDTO): Promise<T> => {
 			try {
-				const response = await api.put<T>(`${endpoint}${id}`, data);
-				return response.data;
+				const response = await api.patch<ApiResponse<T>>(`${endpoint}/${id}`, data);
+				return response.data.data;
 			} catch (error) {
 				throw new Error(handleApiError(error));
 			}
@@ -43,7 +50,7 @@ export function createBaseService<T, CreateDTO, UpdateDTO = Partial<CreateDTO>>(
 
 		delete: async (id: string): Promise<void> => {
 			try {
-				await api.delete(`${endpoint}${id}`);
+				await api.delete(`${endpoint}/${id}`);
 			} catch (error) {
 				throw new Error(handleApiError(error));
 			}

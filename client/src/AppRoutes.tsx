@@ -6,6 +6,8 @@ import { RootRoute } from "@/components/auth/RootRoute";
 
 const Login = lazy(() => import("@/pages/Login"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Servers = lazy(() => import("@/pages/Servers"));
+const Services = lazy(() => import("@/pages/Services"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 export default function AppRoutes() {
@@ -37,6 +39,12 @@ export default function AppRoutes() {
                     <Route path="/dashboard" element={
                         <RootRoute>
                             <Dashboard />
+                        </RootRoute>
+                    } />
+
+                    <Route path="/servers" element={
+                        <RootRoute>
+                            <Servers />
                         </RootRoute>
                     } />
 

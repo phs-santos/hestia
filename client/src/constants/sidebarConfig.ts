@@ -1,5 +1,5 @@
 import { SidebarSection } from "@/types/sidebar";
-import { LayoutDashboard, Trees } from "lucide-react";
+import { LayoutDashboard, Server, Activity } from "lucide-react";
 
 export const SIDEBAR_CONFIG: SidebarSection[] = [
     {
@@ -9,10 +9,11 @@ export const SIDEBAR_CONFIG: SidebarSection[] = [
         ]
     },
     {
-        id: 'example',
-        label: 'Exemplo',
+        id: 'monitoring',
+        label: 'Monitoramento',
         items: [
-            { to: '/#', icon: Trees, label: 'Pagina de Exemplo' },
+            { to: '/servers', icon: Server, label: 'Servidores' },
+            { to: '/services', icon: Activity, label: 'Serviços' },
         ]
     }
 ];

@@ -67,12 +67,12 @@ export function SplashScreen({ onFinish, minDuration = 2000 }: SplashScreenProps
                     {/* Branding Text */}
                     <div className="text-center space-y-2">
                         <h1 className="text-4xl md:text-5xl font-black tracking-[0.2em] text-foreground">
-                            Athena
+                            Hestia
                         </h1>
                         <div className="flex items-center justify-center gap-3">
                             <div className="h-[1px] w-8 bg-gradient-to-r from-transparent to-primary/50" />
                             <span className="text-[10px] uppercase font-bold tracking-[0.5em] text-primary/80">
-                                Sistema Pxtalk de Controle Interno
+                                Sistema de Gestão
                             </span>
                             <div className="h-[1px] w-8 bg-gradient-to-l from-transparent to-primary/50" />
                         </div>
