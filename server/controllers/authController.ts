@@ -77,9 +77,12 @@ export const loginEmail = async (req: Request, res: Response) => {
 export const loginNickname = async (req: Request, res: Response) => {
     try {
         const { nickname, password } = req.body;
+        logger.info(`Usuário ${nickname} tentando fazer login`);
 
         const user = await userRepository.findByNickname(nickname);
         if (!user) return sendError(res, 'Credenciais inválidas', 400);
+
+        logger.info(`Usuário ${user.id} encontrado`);
 
         const validPass = await bcrypt.compare(password, user.password_hash);
         if (!validPass) return sendError(res, 'Credenciais inválidas', 400);
