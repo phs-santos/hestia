@@ -10,7 +10,7 @@ const envPath = path.join(__dirname, '../../.env');
 dotenv.config({ path: envPath });
 
 export const config = {
-    PORT: process.env.APP_PORT || 3001,
+    PORT: process.env.VITE_API_SERVER_PORT || 3001,
     DATABASE_URL: process.env.DATABASE_URL || '',
     JWT_SECRET: process.env.JWT_SECRET || 'your_jwt_secret_here',
     NODE_ENV: process.env.NODE_ENV || 'development',

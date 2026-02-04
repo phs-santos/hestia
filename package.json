@@ -1,10 +1,15 @@
 {
 	"name": "hestia",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"private": true,
 	"description": "Hestia - Full Stack Application",
 	"author": "Paulo Souza <paulo18santos2000@gmail.com>",
 	"scripts": {
-		"dev:server": "cd server && npm run dev"
+		"dev:client": "cd client && npm run dev",
+		"dev:server": "cd server && npm run dev",
+		"dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run dev:server\" \"npm run dev:client\""
+	},
+	"dependencies": {
+		"concurrently": "^9.2.1"
 	}
 }

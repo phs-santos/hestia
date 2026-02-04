@@ -18,6 +18,12 @@ export const userRepository = {
         });
     },
 
+    async findByNickname(nickname: string): Promise<User | undefined> {
+        return await db.query.users.findFirst({
+            where: and(eq(users.nickname, nickname), isNull(users.deletedAt))
+        });
+    },
+
     async create(data: NewUser): Promise<User> {
         const [newUser] = await db.insert(users).values(data).returning();
         return newUser;

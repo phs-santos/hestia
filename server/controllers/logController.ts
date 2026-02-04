@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { logRepository } from '../db/repositories/logRepository';
+import { sendSuccess, sendError } from '../utils/apiResponse';
 
 export const getAll = async (req: Request, res: Response) => {
     try {
         const logs = await logRepository.getAll();
 
-        res.json({ logs });
+        return sendSuccess(res, { logs });
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return sendError(res, error.message);
     }
 };

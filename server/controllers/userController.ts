@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { userRepository } from '../db/repositories/userRepository';
+import { sendSuccess, sendError } from '../utils/apiResponse';
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
@@ -12,9 +13,9 @@ export const getAllUsers = async (req: Request, res: Response) => {
             lastLogin: true,
             createdAt: true,
         });
-        res.json(allUsers);
+        return sendSuccess(res, allUsers);
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return sendError(res, error.message);
     }
 };
 
@@ -22,10 +23,10 @@ export const getUserById = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         const user = await userRepository.findById(id);
-        if (!user) return res.status(404).json({ error: 'User not found' });
-        res.json(user);
+        if (!user) return sendError(res, 'User not found', 404);
+        return sendSuccess(res, user);
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return sendError(res, error.message);
     }
 };
 
@@ -38,9 +39,9 @@ export const updateUser = async (req: Request, res: Response) => {
 
         await userRepository.update(id, data);
 
-        res.json({ success: true });
+        return sendSuccess(res, null, 'Usuário atualizado com sucesso');
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return sendError(res, error.message);
     }
 };
 
@@ -48,8 +49,8 @@ export const deleteUser = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         await userRepository.delete(id);
-        res.json({ success: true });
+        return sendSuccess(res, null, 'Usuário deletado com sucesso');
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return sendError(res, error.message);
     }
 };
