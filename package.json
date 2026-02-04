@@ -1,0 +1,10 @@
+{
+	"name": "hestia",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Hestia - Full Stack Application",
+	"author": "Paulo Souza <paulo18santos2000@gmail.com>",
+	"scripts": {
+		"dev:server": "cd server && npm run dev"
+	}
+}
