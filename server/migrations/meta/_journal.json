@@ -15,6 +15,13 @@
       "when": 1770174815583,
       "tag": "0001_certain_sharon_carter",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770177687434,
+      "tag": "0002_perpetual_susan_delgado",
+      "breakpoints": true
     }
   ]
 }

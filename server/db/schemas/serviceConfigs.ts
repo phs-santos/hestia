@@ -12,5 +12,5 @@ export const serviceConfigs = pgTable('service_configs', {
 
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
-    deletedAt: timestamp('deleted_at')
+    deletedAt: timestamp('deleted_at'),
 });

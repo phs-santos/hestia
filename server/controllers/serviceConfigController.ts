@@ -14,17 +14,8 @@ export const create = async (req: Request, res: Response) => {
 
 export const getAll = async (req: Request, res: Response) => {
     try {
-        const allServers = await serviceConfigRepository.getAll({
-            id: true,
-            name: true,
-            nickname: true,
-            email: true,
-            role: true,
-            lastLogin: true,
-            createdAt: true,
-        });
-
-        return sendSuccess(res, allServers);
+        const allConfigs = await serviceConfigRepository.getAll();
+        return sendSuccess(res, allConfigs);
     } catch (error: any) {
         return sendError(res, error.message);
     }

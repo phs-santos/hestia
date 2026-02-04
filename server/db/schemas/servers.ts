@@ -7,9 +7,9 @@ export const servers = pgTable('servers', {
     description: text('description'),
     host: text('host').notNull(),
     provider: text('provider'), // aws, gcp, on-prem, etc
-    environment: text('environment').notNull(), // dev, staging, prod
+    environment: text('environment').notNull().default('prod'), // dev, staging, prod
 
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
-    deletedAt: timestamp('deleted_at')
+    deletedAt: timestamp('deleted_at'),
 });

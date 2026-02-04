@@ -14,17 +14,8 @@ export const create = async (req: Request, res: Response) => {
 
 export const getAll = async (req: Request, res: Response) => {
     try {
-        const allServers = await serviceTypeRepository.getAll({
-            id: true,
-            name: true,
-            nickname: true,
-            email: true,
-            role: true,
-            lastLogin: true,
-            createdAt: true,
-        });
-
-        return sendSuccess(res, allServers);
+        const allServiceTypes = await serviceTypeRepository.getAll();
+        return sendSuccess(res, allServiceTypes);
     } catch (error: any) {
         return sendError(res, error.message);
     }
