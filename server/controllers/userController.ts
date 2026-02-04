@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { userRepository } from '../db/repositories/userRepository';
 import { sendSuccess, sendError } from '../utils/apiResponse';
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAll = async (req: Request, res: Response) => {
     try {
         const allUsers = await userRepository.getAll({
             id: true,
@@ -19,18 +19,18 @@ export const getAllUsers = async (req: Request, res: Response) => {
     }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
+export const getById = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         const user = await userRepository.findById(id);
-        if (!user) return sendError(res, 'User not found', 404);
+        if (!user) return sendError(res, 'Usuário não encontrado', 404);
         return sendSuccess(res, user);
     } catch (error: any) {
         return sendError(res, error.message);
     }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
+export const update = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         const data = req.body;
@@ -45,7 +45,7 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
+export const remove = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         await userRepository.delete(id);

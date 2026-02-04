@@ -16,10 +16,10 @@ export const register = async (req: Request, res: Response) => {
 
         const quantityUsers = await userRepository.count();
         const salt = await bcrypt.genSalt(10);
-        const password_hash = await bcrypt.hash(password, salt);
+        const passwordHash = await bcrypt.hash(password, salt);
         const role = quantityUsers === 0 ? 'ROOT' : 'USER';
 
-        const newUser = await userRepository.create({ email, password_hash, name, role });
+        const newUser = await userRepository.create({ email, passwordHash, name, role });
         await logAction(newUser.id, 'REGISTER', { email, name, role }, req);
 
         return sendSuccess(res, null, 'Usuário criado com sucesso', 201);
@@ -35,7 +35,7 @@ export const loginEmail = async (req: Request, res: Response) => {
         const user = await userRepository.findByEmail(email);
         if (!user) return sendError(res, 'Credenciais inválidas', 400);
 
-        const validPass = await bcrypt.compare(password, user.password_hash);
+        const validPass = await bcrypt.compare(password, user.passwordHash);
         if (!validPass) return sendError(res, 'Credenciais inválidas', 400);
 
         const token = jwt.sign(
@@ -84,7 +84,7 @@ export const loginNickname = async (req: Request, res: Response) => {
 
         logger.info(`Usuário ${user.id} encontrado`);
 
-        const validPass = await bcrypt.compare(password, user.password_hash);
+        const validPass = await bcrypt.compare(password, user.passwordHash);
         if (!validPass) return sendError(res, 'Credenciais inválidas', 400);
 
         const token = jwt.sign(

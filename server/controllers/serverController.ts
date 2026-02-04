@@ -2,7 +2,17 @@ import { Request, Response } from 'express';
 import { serverRepository } from '../db/repositories/serverRepository';
 import { sendSuccess, sendError } from '../utils/apiResponse';
 
-export const getAllServers = async (req: Request, res: Response) => {
+export const create = async (req: Request, res: Response) => {
+    try {
+        const data = req.body;
+        const server = await serverRepository.create(data);
+        return sendSuccess(res, server);
+    } catch (error: any) {
+        return sendError(res, error.message);
+    }
+};
+
+export const getAll = async (req: Request, res: Response) => {
     try {
         const allServers = await serverRepository.getAll({
             id: true,
@@ -20,7 +30,7 @@ export const getAllServers = async (req: Request, res: Response) => {
     }
 };
 
-export const getServerById = async (req: Request, res: Response) => {
+export const getById = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         const server = await serverRepository.findById(id);
@@ -31,7 +41,7 @@ export const getServerById = async (req: Request, res: Response) => {
     }
 };
 
-export const updateServer = async (req: Request, res: Response) => {
+export const update = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         const data = req.body;
@@ -46,7 +56,7 @@ export const updateServer = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteServer = async (req: Request, res: Response) => {
+export const remove = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         await serverRepository.delete(id);
