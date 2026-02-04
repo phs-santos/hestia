@@ -11,7 +11,7 @@
 		"db:migrate": "tsx scripts/migrate.ts",
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
-		"build": "tsc"
+		"build": "tsc && esbuild index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/index.js"
 	},
 	"keywords": [],
 	"author": "Paulo Souza <paulo18santos2000@gmail.com.br>",
@@ -35,7 +35,11 @@
 		"@types/node": "^25.2.0",
 		"@types/pg": "^8.16.0",
 		"drizzle-kit": "^0.31.8",
+		"esbuild": "^0.25.0",
 		"tsx": "^4.21.0",
 		"typescript": "^5.9.3"
+	},
+	"overrides": {
+		"esbuild": "^0.25.0"
 	}
 }

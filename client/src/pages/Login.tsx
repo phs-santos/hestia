@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { Mail, Lock, Eye, EyeOff, Loader2, CheckCircle2, Ticket, BarChart3, Users } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, Loader2, CheckCircle2, BarChart3, Users } from 'lucide-react'
 
 const loginSchema = z.object({
 	identifier: z.string().min(1, 'E-mail ou usuário é obrigatório'),

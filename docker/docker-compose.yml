@@ -7,10 +7,12 @@ services:
     container_name: ${CONTAINER_NAME}
     ports:
       - "${VITE_API_SERVER_PORT}:${VITE_API_SERVER_PORT}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - ../.env
     environment:
       - NODE_ENV=production
       - PORT=${VITE_API_SERVER_PORT}
-      - DB_HOST=${DB_HOST}
+      - DATABASE_URL=postgresql://hestia:hestia_godness@host.docker.internal:5432/hestia
     restart: unless-stopped

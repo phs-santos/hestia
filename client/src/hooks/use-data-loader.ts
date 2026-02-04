@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-type DataType = "tickets" | "categories" | "companies" | "users" | "contacts";
+type DataType = "categories" | "companies" | "users" | "contacts";
 
 interface UseDataLoaderOptions {
 	/**
