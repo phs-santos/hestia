@@ -3,30 +3,44 @@ import { Button } from '@/components/ui/button';
 import { Activity, AlertTriangle, ArrowRight, Layers, Plus, ServerIcon } from 'lucide-react';
 import { CreateServerDialog } from '@/features/monitoring/components/CreateServerDialog';
 import { Server } from '@/types/infrastructure';
-import { useState } from 'react';
-import { mockActivities, mockServers } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { mockActivities } from '@/data/mockData';
 import { MetricCard } from '@/components/MetricCard';
+import { monitoringService } from '@/features/monitoring/api/monitoringService';
 import { ActivityFeed } from '@/components/ActivityFeed';
 import { ServerCard } from '@/features/monitoring/components/ServerCard';
 import { ServerDetailsSheet } from '@/components/ServerDetailsSheet';
 
 export default function Dashboard() {
-	const [servers, setServers] = useState(mockServers);
+	const [servers, setServers] = useState<Server[]>([]);
+	const [loading, setLoading] = useState(true);
 	const [createDialogOpen, setCreateDialogOpen] = useState(false);
 	const [selectedServer, setSelectedServer] = useState<Server | null>(null);
 	const [detailsOpen, setDetailsOpen] = useState(false);
 
-	const handleCreateServer = (newServer: Omit<Server, 'id' | 'services' | 'uptime' | 'cpu' | 'memory' | 'storage'>) => {
-		const server: Server = {
-			...newServer,
-			id: String(servers.length + 1),
-			services: [],
-			uptime: '0d 0h 0m',
-			cpu: Math.floor(Math.random() * 30),
-			memory: Math.floor(Math.random() * 40),
-			storage: Math.floor(Math.random() * 20),
-		};
-		setServers([server, ...servers]);
+	useEffect(() => {
+		loadData();
+	}, []);
+
+	const loadData = async () => {
+		try {
+			setLoading(true);
+			const data = await monitoringService.getServers();
+			setServers(data);
+		} catch (error) {
+			console.error('Failed to load servers:', error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleCreateServer = async (newServer: Omit<Server, 'id' | 'services' | 'uptime' | 'cpu' | 'memory' | 'storage'>) => {
+		try {
+			await monitoringService.createServer(newServer);
+			loadData();
+		} catch (error) {
+			console.error('Failed to create server:', error);
+		}
 	};
 
 	const handleSelectServer = (server: Server) => {

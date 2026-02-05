@@ -10,3 +10,4 @@ export * from './schemas/users';
 export * from './relations/logsRelations';
 export * from './relations/serviceConfigsRelations';
 export * from './relations/servicesRelations';
+export * from './relations/serversRelations';

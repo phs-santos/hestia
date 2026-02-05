@@ -3,7 +3,6 @@ import { MainLayout } from '@/layouts/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Plus, Activity, MoreVertical, Globe, Trash2, Edit, Cpu, Settings } from 'lucide-react';
 import { Service } from '@/types/infrastructure';
-import { mockServers } from '@/data/mockData';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
@@ -34,12 +33,8 @@ export default function Services() {
     const loadServices = async () => {
         try {
             setIsLoading(true);
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Flatten services from all servers
-            const allServices = mockServers.flatMap(server => server.services);
-            setServices(allServices);
+            const data = await monitoringService.getServices();
+            setServices(data);
         } catch (error: any) {
             toast.error('Erro ao carregar serviços', {
                 description: error.message,

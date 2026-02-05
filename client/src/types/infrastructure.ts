@@ -17,12 +17,14 @@ export interface Server {
 
 export interface Service {
     id: string;
+    serverId: string; // Added to match backend
     name: string;
+    description?: string; // Added
     type: 'database' | 'api' | 'web' | 'cache' | 'queue' | 'storage';
     status: ServiceStatus;
     version: string;
     port: number;
-    lastDeployment: Date;
+    lastDeployment?: Date; // Made optional
     createdAt: Date;
 }
 

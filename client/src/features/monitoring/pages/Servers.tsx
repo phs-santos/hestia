@@ -4,8 +4,9 @@ import { Activity, AlertTriangle, ArrowRight, Filter, Layers, Plus, Search, Serv
 import { CreateServerDialog } from '../components/CreateServerDialog';
 import { ServerDetailsSheet } from '@/components/ServerDetailsSheet';
 import { Server } from '@/types/infrastructure';
-import { useState } from 'react';
-import { mockActivities, mockServers } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { mockActivities } from '@/data/mockData';
+import { monitoringService } from '../api/monitoringService';
 import { MetricCard } from '@/components/MetricCard';
 import { ServerCard } from '../components/ServerCard';
 import { ActivityFeed } from '@/components/ActivityFeed';
@@ -15,22 +16,41 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 export default function Servers() {
 	const navigate = useNavigate();
-	const [servers, setServers] = useState(mockServers);
+	const [servers, setServers] = useState<Server[]>([]);
+	const [loading, setLoading] = useState(true);
 	const [createDialogOpen, setCreateDialogOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [statusFilter, setStatusFilter] = useState('all');
 
-	const handleCreateServer = (newServer: Omit<Server, 'id' | 'services' | 'uptime' | 'cpu' | 'memory' | 'storage'>) => {
-		const server: Server = {
-			...newServer,
-			id: String(servers.length + 1),
-			services: [],
-			uptime: '0d 0h 0m',
-			cpu: Math.floor(Math.random() * 30),
-			memory: Math.floor(Math.random() * 40),
-			storage: Math.floor(Math.random() * 20),
-		};
-		setServers([server, ...servers]);
+	const loadServers = async () => {
+		try {
+			setLoading(true);
+			const data = await monitoringService.getServers();
+			setServers(data);
+		} catch (error) {
+			console.error('Failed to load servers:', error);
+			// toast.error('Erro ao carregar servidores');
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		loadServers();
+	}, []);
+
+	const handleCreateServer = async (newServer: Omit<Server, 'id' | 'services' | 'uptime' | 'cpu' | 'memory' | 'storage' | 'createdAt'>) => {
+		try {
+			// Need to match partial server expected by createServer
+			// Backend expects: name, ip, provider, environment, etc.
+			// CreateServerDialog provides some of these.
+			// Let's assume newServer has correct fields.
+			// Backend handles id, services, uptime, cpu/mem/storage default.
+			await monitoringService.createServer(newServer);
+			loadServers(); // Reload list
+		} catch (error) {
+			console.error('Failed to create server:', error);
+		}
 	};
 
 	const handleSelectServer = (server: Server) => {

@@ -1,7 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { StatusBadge } from '@/components/StatusBadge';
-import { mockServers } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
+import { monitoringService } from '../api/monitoringService';
+import { useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 // import { Progress } from '@/components/ui/progress';
 import {
     Play,
@@ -19,17 +21,18 @@ import {
     Layers,
     ChevronRight,
     Database,
-    Server,
+    Server as ServerIcon,
     MessageSquare
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Service } from '@/types/infrastructure';
+import { Server, Service } from '@/types/infrastructure';
 import { MainLayout } from '@/layouts/MainLayout';
+import { CreateServiceDialog } from '../components/CreateServiceDialog';
 
 const typeIcons = {
     database: Database,
-    api: Server,
+    api: ServerIcon,
     web: Globe,
     cache: Layers,
     queue: MessageSquare,
@@ -48,8 +51,48 @@ const typeColors = {
 export default function ServerDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [server, setServer] = useState<Server | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
-    const server = mockServers.find(s => s.id === id);
+    const loadServer = async () => {
+        if (!id) return;
+        try {
+            // setLoading(true); // Don't block UI on reload
+            const data = await monitoringService.getServerById(id);
+            setServer(data);
+        } catch (error) {
+            console.error('Failed to load server:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        setLoading(true);
+        loadServer();
+    }, [id]);
+
+    const handleCreateService = async (serviceData: Partial<Service>) => {
+        try {
+            await monitoringService.createService(serviceData);
+            loadServer(); // Reload to show new service
+        } catch (error) {
+            console.error('Failed to create service:', error);
+        }
+    };
+
+    if (loading) {
+        return (
+            <MainLayout>
+                <div className="flex h-[50vh] items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+            </MainLayout>
+        );
+    }
+
+    // const server = mockServers.find(s => s.id === id);
 
     if (!server) {
         return (
@@ -180,7 +223,7 @@ export default function ServerDetail() {
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold">Serviços ({server.services.length})</h2>
-                        <Button>
+                        <Button onClick={() => setCreateDialogOpen(true)}>
                             <Plus className="mr-2 h-4 w-4" />
                             Adicionar Serviço
                         </Button>
@@ -219,7 +262,7 @@ export default function ServerDetail() {
                         <div className="text-center py-12 rounded-xl border border-dashed border-border">
                             <Layers className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                             <p className="text-muted-foreground mb-4">Nenhum serviço configurado</p>
-                            <Button>
+                            <Button onClick={() => setCreateDialogOpen(true)}>
                                 <Plus className="mr-2 h-4 w-4" />
                                 Adicionar Primeiro Serviço
                             </Button>
@@ -227,6 +270,17 @@ export default function ServerDetail() {
                     )}
                 </div>
             </div>
+
+            {
+                server && (
+                    <CreateServiceDialog
+                        open={createDialogOpen}
+                        onOpenChange={setCreateDialogOpen}
+                        onCreateService={handleCreateService}
+                        serverId={server.id}
+                    />
+                )
+            }
         </MainLayout >
     );
 }

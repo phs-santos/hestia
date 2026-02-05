@@ -1,4 +1,5 @@
 import { createBaseService } from "@/services/baseService";
+import { Server, Service } from "@/types/infrastructure";
 
 // Endpoints sincronizados com o backend (padronizados para plural)
 const serverService = createBaseService<Server, Partial<Server>>('/servers');
@@ -6,17 +7,7 @@ const serviceService = createBaseService<Service, Partial<Service>>('/services')
 const serviceTypeService = createBaseService<ServiceType, Partial<ServiceType>>('/service-types');
 const serviceConfigService = createBaseService<ServiceConfig, Partial<ServiceConfig>>('/service-configs');
 
-export interface Server {
-    id: string;
-    name: string;
-    description?: string;
-    host: string;
-    provider?: string;
-    environment: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
+// Local interfaces for types not yet in infrastructure.ts
 export interface ServiceType {
     id: string;
     code: string;
@@ -24,17 +15,7 @@ export interface ServiceType {
     description?: string;
 }
 
-export interface Service {
-    id: string;
-    serverId: string;
-    serviceTypeId: string;
-    name: string;
-    description?: string;
-    version?: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-}
+// export interface ServiceConfig is kept below
 
 export interface ServiceConfig {
     id: string;
@@ -46,8 +27,32 @@ export interface ServiceConfig {
 
 export const monitoringService = {
     // Servers
+    // Servers
     async getServers(): Promise<Server[]> {
-        return await serverService.getAll();
+        const servers = await serverService.getAll();
+        // Ensure dates are parsed correctly
+        return servers.map(server => ({
+            ...server,
+            createdAt: new Date(server.createdAt),
+            // updatedAt needed? Server interface in infrastructure might not have updatedAt.
+            // Let's check infrastructure.ts again. It has createdAt. It doesn't have updatedAt.
+            // So I just map what matches.
+            // Also need to default missing fields if any.
+            // Infrastructure Server: id, name, status, ip, region, cpu, memory, storage, uptime, services, createdAt.
+            // Backend returns everything.
+            // Need to ensure services is an array. Backend might return it if joined.
+            // serverService.getAll() returns what backend sends.
+            // If backend doesn't send 'services', I need to default it to [].
+            services: server.services || []
+        }));
+    },
+    async getServerById(id: string): Promise<Server> {
+        const server = await serverService.getById(id);
+        return {
+            ...server,
+            createdAt: new Date(server.createdAt),
+            services: (server.services || []).map(parseServiceDates)
+        };
     },
     async createServer(data: Partial<Server>): Promise<Server> {
         return await serverService.create(data);
@@ -61,16 +66,23 @@ export const monitoringService = {
 
     // Services
     async getServices(): Promise<Service[]> {
-        return await serviceService.getAll();
+        const services = await serviceService.getAll();
+        return services.map(parseServiceDates);
     },
     async createService(data: Partial<Service>): Promise<Service> {
-        return await serviceService.create(data);
+        const service = await serviceService.create(data);
+        return parseServiceDates(service);
     },
     async updateService(id: string, data: Partial<Service>): Promise<Service> {
-        return await serviceService.update(id, data);
+        const service = await serviceService.update(id, data);
+        return parseServiceDates(service);
     },
     async deleteService(id: string): Promise<void> {
         await serviceService.delete(id);
+    },
+    async getServiceById(id: string): Promise<Service> {
+        const service = await serviceService.getById(id);
+        return parseServiceDates(service);
     },
 
     // Service Types
@@ -80,8 +92,8 @@ export const monitoringService = {
 
     // Service Configs
     async getServiceConfigs(serviceId?: string): Promise<ServiceConfig[]> {
-        const configs = await serviceConfigService.getAll();
-        return serviceId ? configs.filter(c => c.serviceId === serviceId) : configs;
+        const configs = await serviceConfigService.getAll(serviceId ? { serviceId } : undefined);
+        return configs;
     },
     async createServiceConfig(data: Partial<ServiceConfig>): Promise<ServiceConfig> {
         return await serviceConfigService.create(data);
@@ -93,3 +105,12 @@ export const monitoringService = {
         await serviceConfigService.delete(id);
     },
 };
+
+function parseServiceDates(service: any): Service {
+    return {
+        ...service,
+        createdAt: new Date(service.createdAt),
+        lastDeployment: service.lastDeployment ? new Date(service.lastDeployment) : undefined,
+        // Ensure legacy or missing fields safely default if needed, though backend should provide them
+    };
+}

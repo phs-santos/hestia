@@ -8,7 +8,10 @@ export type Server = typeof servers.$inferSelect;
 export const serverRepository = {
     async findById(id: string): Promise<Server | undefined> {
         return await db.query.servers.findFirst({
-            where: and(eq(servers.id, id), isNull(servers.deletedAt))
+            where: and(eq(servers.id, id), isNull(servers.deletedAt)),
+            with: {
+                services: true
+            }
         });
     },
 
@@ -26,7 +29,10 @@ export const serverRepository = {
     async getAll(columns?: any): Promise<any[]> {
         return await db.query.servers.findMany({
             where: isNull(servers.deletedAt),
-            columns
+            columns,
+            with: {
+                services: true
+            }
         });
     },
 

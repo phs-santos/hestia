@@ -12,9 +12,9 @@ export function createBaseService<T, CreateDTO, UpdateDTO = Partial<CreateDTO>>(
 	endpoint: string
 ) {
 	return {
-		getAll: async (): Promise<T[]> => {
+		getAll: async (params?: Record<string, any>): Promise<T[]> => {
 			try {
-				const response = await api.get<ApiResponse<T[]>>(endpoint);
+				const response = await api.get<ApiResponse<T[]>>(endpoint, { params });
 				return response.data.data;
 			} catch (error) {
 				throw new Error(handleApiError(error));

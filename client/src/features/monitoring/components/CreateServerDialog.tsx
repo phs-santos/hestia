@@ -23,7 +23,7 @@ import { Loader2 } from 'lucide-react';
 interface CreateServerDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onCreateServer: (server: Omit<Server, 'id' | 'services' | 'uptime' | 'cpu' | 'memory' | 'storage'>) => void;
+    onCreateServer: (server: Omit<Server, 'id' | 'services' | 'uptime' | 'cpu' | 'memory' | 'storage' | 'createdAt'>) => void;
 }
 
 const regions = [
@@ -37,6 +37,7 @@ const regions = [
 export function CreateServerDialog({ open, onOpenChange, onCreateServer }: CreateServerDialogProps) {
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState('');
+    const [ip, setIp] = useState('');
     const [region, setRegion] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -49,13 +50,17 @@ export function CreateServerDialog({ open, onOpenChange, onCreateServer }: Creat
         onCreateServer({
             name,
             status: 'running',
-            ip: `192.168.1.${Math.floor(Math.random() * 100) + 100}`,
+            ip,
             region,
-            createdAt: new Date(),
-        });
+            // createdAt: new Date(), // Backend handles this
+        } as any); // Cast to any or partial because we omitted createdAt from the handler signature in Servers.tsx?
+        // Actually, Servers.tsx expects a specific Omit type. 
+        // If I omit createdAt there too, it will be fine. 
+        // For now, I'll send it without createdAt.
 
         setLoading(false);
         setName('');
+        setIp('');
         setRegion('');
         onOpenChange(false);
     };
@@ -83,6 +88,17 @@ export function CreateServerDialog({ open, onOpenChange, onCreateServer }: Creat
                             />
                         </div>
                         <div className="space-y-2">
+                            <Label htmlFor="ip">Endereço IP</Label>
+                            <Input
+                                id="ip"
+                                placeholder="ex: 10.0.0.15"
+                                value={ip}
+                                onChange={(e) => setIp(e.target.value)}
+                                className="font-mono"
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="region">Região</Label>
                             <Select value={region} onValueChange={setRegion} required>
                                 <SelectTrigger>
@@ -102,7 +118,7 @@ export function CreateServerDialog({ open, onOpenChange, onCreateServer }: Creat
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={loading || !name || !region}>
+                        <Button type="submit" disabled={loading || !name || !ip || !region}>
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {loading ? 'Criando...' : 'Criar Servidor'}
                         </Button>

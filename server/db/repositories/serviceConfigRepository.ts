@@ -12,6 +12,12 @@ export const serviceConfigRepository = {
         });
     },
 
+    async findByServiceId(serviceId: string): Promise<ServiceConfig[]> {
+        return await db.query.serviceConfigs.findMany({
+            where: and(eq(serviceConfigs.serviceId, serviceId), isNull(serviceConfigs.deletedAt))
+        });
+    },
+
     async create(data: NewServiceConfig): Promise<ServiceConfig> {
         const [newServiceConfig] = await db.insert(serviceConfigs).values(data).returning();
         return newServiceConfig;

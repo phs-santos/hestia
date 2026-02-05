@@ -14,7 +14,15 @@ export const create = async (req: Request, res: Response) => {
 
 export const getAll = async (req: Request, res: Response) => {
     try {
-        const allConfigs = await serviceConfigRepository.getAll();
+        const { serviceId } = req.query;
+        let allConfigs;
+
+        if (serviceId) {
+            allConfigs = await serviceConfigRepository.findByServiceId(serviceId as string);
+        } else {
+            allConfigs = await serviceConfigRepository.getAll();
+        }
+
         return sendSuccess(res, allConfigs);
     } catch (error: any) {
         return sendError(res, error.message);

@@ -1,46 +1,20 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { StatusBadge } from '@/components/StatusBadge';
-import { mockServers } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { MainLayout } from '@/layouts/MainLayout';
+import { monitoringService } from '../api/monitoringService';
+import { Server, Service } from '@/types/infrastructure';
+import { ConfigsDialog } from '../components/ConfigsDialog';
+import { AlertTriangle, ArrowLeft, Bug, CheckCircle2, ChevronDown, Clock, Database, GitBranch, Globe, Globe2, HardDrive, HelpCircle, Layers, Loader2, MessageSquare, RefreshCw, RotateCcw, Server as ServerIcon, Settings, Shield, Terminal, Wrench, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-    RefreshCw,
-    Settings,
-    ArrowLeft,
-    Terminal,
-    Database,
-    Globe,
-    Layers,
-    MessageSquare,
-    Server,
-    HardDrive,
-    GitBranch,
-    Clock,
-    AlertTriangle,
-    CheckCircle2,
-    HelpCircle,
-    Wrench,
-    Bug,
-    Zap,
-    Shield,
-    RotateCcw,
-    ChevronDown
-} from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-// import {
-//     Accordion,
-//     AccordionContent,
-//     AccordionItem,
-//     AccordionTrigger,
-// } from '@/components/ui/accordion';
-import { useState } from 'react';
-import { MainLayout } from '@/layouts/MainLayout';
 
 const typeIcons = {
     database: Database,
-    api: Server,
-    web: Globe,
+    api: ServerIcon,
+    web: Globe2,
     cache: Layers,
     queue: MessageSquare,
     storage: HardDrive,
@@ -365,9 +339,40 @@ export default function ServiceDetail() {
     const { serverId, serviceId } = useParams();
     const navigate = useNavigate();
     const [openItem, setOpenItem] = useState<string | null>(null);
+    const [service, setService] = useState<Service | null>(null);
+    const [server, setServer] = useState<Server | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [configDialogOpen, setConfigDialogOpen] = useState(false);
 
-    const server = mockServers.find(s => s.id === serverId);
-    const service = server?.services.find(s => s.id === serviceId);
+    useEffect(() => {
+        const loadData = async () => {
+            if (!serviceId || !serverId) return;
+            try {
+                setLoading(true);
+                const [serviceData, serverData] = await Promise.all([
+                    monitoringService.getServiceById(serviceId),
+                    monitoringService.getServerById(serverId)
+                ]);
+                setService(serviceData);
+                setServer(serverData);
+            } catch (error) {
+                console.error('Failed to load service details:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadData();
+    }, [serviceId, serverId]);
+
+    if (loading) {
+        return (
+            <MainLayout>
+                <div className="flex h-[50vh] items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+            </MainLayout>
+        );
+    }
 
     if (!server || !service) {
         return (
@@ -433,7 +438,7 @@ export default function ServiceDetail() {
                         <Button size="sm" variant="outline">
                             <Terminal className="mr-2 h-4 w-4" /> Logs
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" onClick={() => setConfigDialogOpen(true)}>
                             <Settings className="mr-2 h-4 w-4" /> Config
                         </Button>
                     </div>
@@ -460,11 +465,16 @@ export default function ServiceDetail() {
                             <Clock className="h-4 w-4" />
                             <span>Último Deploy</span>
                         </div>
-                        <p className="font-semibold">{format(service.lastDeployment, 'dd MMM yyyy', { locale: ptBR })}</p>
+                        <p className="font-semibold">
+                            {service.lastDeployment
+                                ? format(service.lastDeployment, 'dd MMM yyyy', { locale: ptBR })
+                                : 'N/A'
+                            }
+                        </p>
                     </div>
                     <div className="rounded-xl border border-border bg-card p-4">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                            <Server className="h-4 w-4" />
+                            <ServerIcon className="h-4 w-4" />
                             <span>Servidor</span>
                         </div>
                         <p className="font-mono font-semibold truncate">{server.name}</p>
@@ -512,7 +522,12 @@ export default function ServiceDetail() {
                                     </div>
                                     <div className="flex justify-between py-2 border-b border-border">
                                         <span className="text-muted-foreground">Último Deploy</span>
-                                        <span>{format(service.lastDeployment, 'dd/MM/yyyy HH:mm', { locale: ptBR })}</span>
+                                        <span>
+                                            {service.lastDeployment
+                                                ? format(service.lastDeployment, 'dd/MM/yyyy HH:mm', { locale: ptBR })
+                                                : 'N/A'
+                                            }
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -665,7 +680,14 @@ export default function ServiceDetail() {
                         </div>
                     </TabsContent>
                 </Tabs>
+
+                <ConfigsDialog
+                    open={configDialogOpen}
+                    onOpenChange={setConfigDialogOpen}
+                    serviceId={service.id}
+                />
             </div>
         </MainLayout>
     );
+
 }
