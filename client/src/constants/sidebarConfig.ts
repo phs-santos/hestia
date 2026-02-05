@@ -1,5 +1,5 @@
 import { SidebarSection } from "@/types/sidebar";
-import { LayoutDashboard, Server, Activity, Package } from "lucide-react";
+import { LayoutDashboard, Server, Activity, Package, Shield } from "lucide-react";
 
 export const SIDEBAR_CONFIG: SidebarSection[] = [
     {
@@ -19,11 +19,11 @@ export const SIDEBAR_CONFIG: SidebarSection[] = [
         ]
     },
     {
-        id: 'products',
-        label: 'Gestão de Produtos',
-        featureId: 'products',
+        id: 'admin',
+        label: 'Administração',
+        featureId: 'root-management',
         items: [
-            { to: '/products', icon: Package, label: 'Produtos', featureId: 'products-list' },
+            { to: '/admin', icon: Shield, label: 'Root Panel', featureId: 'root-management' },
         ]
     }
 ];

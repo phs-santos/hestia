@@ -5,6 +5,8 @@ import { Server, Service } from "@/types/infrastructure";
 const serverService = createBaseService<Server, Partial<Server>>('/servers');
 const serviceService = createBaseService<Service, Partial<Service>>('/services');
 const serviceTypeService = createBaseService<ServiceType, Partial<ServiceType>>('/service-types');
+const featureService = createBaseService<any, any>('/features');
+const subfeatureService = createBaseService<any, any>('/subfeatures');
 const serviceConfigService = createBaseService<ServiceConfig, Partial<ServiceConfig>>('/service-configs');
 
 // Local interfaces for types not yet in infrastructure.ts
@@ -103,6 +105,11 @@ export const monitoringService = {
     },
     async deleteServiceConfig(id: string): Promise<void> {
         await serviceConfigService.delete(id);
+    },
+
+    // Features
+    async getFeatures(): Promise<any[]> {
+        return await featureService.getAll();
     },
 };
 

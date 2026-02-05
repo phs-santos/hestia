@@ -13,8 +13,10 @@ const Servers = lazy(() => import("@/features/monitoring/pages/Servers"));
 const ServerDetail = lazy(() => import("@/features/monitoring/pages/ServerDetail"));
 const Services = lazy(() => import("@/features/monitoring/pages/Services"));
 const ServiceDetail = lazy(() => import("@/features/monitoring/pages/ServiceDetail"));
+const AdminManagement = lazy(() => import("@/pages/AdminManagement"));
 
 const BlankPage = lazy(() => import("@/pages/BlankPage"));
+const Unauthorized = lazy(() => import("@/pages/Unauthorized"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 export default function AppRoutes() {
@@ -34,13 +36,14 @@ export default function AppRoutes() {
     }
 
     function RedirectHandler() {
-        const { isAuthenticated } = useAuth();
+        const { isAuthenticated, user } = useAuth();
 
         if (!isAuthenticated) {
             return <Navigate to="/login" replace />;
         }
 
-        return <Navigate to="/dashboard" replace />;
+        const destination = user?.role === 'ROOT' ? '/admin' : '/dashboard';
+        return <Navigate to={destination} replace />;
     }
 
     return (
@@ -81,12 +84,21 @@ export default function AppRoutes() {
                     } />
 
                     <Route path="/servers/:serverId/services/:serviceId" element={
+                        <FeatureGuard featureId="monitoring">
+                            <Services />
+                        </FeatureGuard>
+                    } />
+
+                    <Route path="/admin" element={
                         <RootRoute>
-                            <ServiceDetail />
+                            <FeatureGuard featureId="root-management">
+                                <AdminManagement />
+                            </FeatureGuard>
                         </RootRoute>
                     } />
 
                     <Route path="/blank" element={<BlankPage />} />
+                    <Route path="/unauthorized" element={<Unauthorized />} />
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -9,6 +9,7 @@ export interface AuthUser {
     lastLogin: string;
     createdAt: string;
     updatedAt: string;
+    features?: any[];
 }
 
 export interface JwtPayload {
@@ -139,12 +140,15 @@ export const authService = {
                 throw new Error(response.message || "Erro ao fazer login");
             }
 
-            const { token, user } = response.data;
+            const { token, user, features } = response.data;
+
+            // Attach features to user for storage
+            const userWithFeatures = { ...user, features };
 
             // Persistir sessão
-            authService.saveSession(token, user);
+            authService.saveSession(token, userWithFeatures);
 
-            return user;
+            return userWithFeatures;
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }

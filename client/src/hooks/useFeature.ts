@@ -1,13 +1,11 @@
-import { useAuth } from '@/context/AuthContext';
-import { isFeatureEnabled } from '@/config/features';
+import { useFeatures } from '@/context/FeatureContext';
 
 export function useFeature() {
-    const { user } = useAuth();
-    const userRole = user?.role as any; // Cast generic string to UserRole if needed
+    const { canAccess: contextCanAccess, isLoading } = useFeatures();
 
     const canAccess = (featureId: string) => {
-        return isFeatureEnabled(featureId, userRole);
+        return contextCanAccess(featureId);
     };
 
-    return { canAccess };
+    return { canAccess, isLoading };
 }

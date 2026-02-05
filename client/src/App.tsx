@@ -9,6 +9,8 @@ import { SplashScreen } from "@/layouts/SplashScreen";
 import { useState } from "react";
 import AppRoutes from "./routes/AppRoutes";
 
+import { FeatureProvider } from "@/context/FeatureContext";
+
 const queryClient = new QueryClient();
 
 export default function App() {
@@ -25,10 +27,12 @@ export default function App() {
 			>
 				<QueryClientProvider client={queryClient}>
 					<AuthProvider>
-						<TooltipProvider>
-							<Notifications />
-							<AppRoutes />
-						</TooltipProvider>
+						<FeatureProvider>
+							<TooltipProvider>
+								<Notifications />
+								<AppRoutes />
+							</TooltipProvider>
+						</FeatureProvider>
 					</AuthProvider>
 				</QueryClientProvider>
 			</BrowserRouter>

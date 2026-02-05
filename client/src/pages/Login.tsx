@@ -19,7 +19,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function Login() {
-	const { login, isAuthenticated } = useAuth()
+	const { login, isAuthenticated, user } = useAuth()
 	const [isLoading, setIsLoading] = useState(false)
 	const [showPassword, setShowPassword] = useState(false)
 
@@ -29,7 +29,8 @@ export default function Login() {
 	})
 
 	if (isAuthenticated) {
-		return <Navigate to={'/dashboard'} replace />;
+		const destination = user?.role === 'ROOT' ? '/admin' : '/dashboard';
+		return <Navigate to={destination} replace />;
 	}
 
 	const onLoginSubmit = async (data: LoginFormValues) => {

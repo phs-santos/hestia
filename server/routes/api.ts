@@ -12,6 +12,7 @@ import serverRoutes from './server.route';
 import serviceRoutes from './service.route';
 import serviceConfigRoutes from './serviceConfig.route';
 import serviceTypeRoutes from './serviceType.route';
+import featureRoutes from './feature.route';
 
 router.use(authRoutes);
 router.use(usersRoutes);
@@ -20,5 +21,6 @@ router.use(serverRoutes);
 router.use(serviceRoutes);
 router.use(serviceConfigRoutes);
 router.use(serviceTypeRoutes);
+router.use('/features', featureRoutes);
 
 export default router;

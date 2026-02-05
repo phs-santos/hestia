@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { userRepository } from '../db/repositories/userRepository';
+import { featureRepository } from '../db/repositories/featureRepository';
 import { config } from '../config/config';
 import bcrypt from 'bcrypt';
 import { logAction } from '../services/logger';
@@ -67,7 +68,9 @@ export const loginEmail = async (req: Request, res: Response) => {
             updatedAt: user.updatedAt,
         };
 
-        return sendSuccess(res, { token, user: userResponse });
+        const features = await featureRepository.findAll();
+
+        return sendSuccess(res, { token, user: userResponse, features });
     } catch (error: any) {
         logger.error(`Erro ao fazer login: ${error.message}`);
         return sendError(res, error.message);
@@ -116,7 +119,9 @@ export const loginNickname = async (req: Request, res: Response) => {
             updatedAt: user.updatedAt,
         };
 
-        return sendSuccess(res, { token, user: userResponse });
+        const features = await featureRepository.findAll();
+
+        return sendSuccess(res, { token, user: userResponse, features });
     } catch (error: any) {
         logger.error(`Erro ao fazer login: ${error.message}`);
         return sendError(res, error.message);
@@ -140,7 +145,21 @@ export const getMe = async (req: Request, res: Response) => {
             updatedAt: user.updatedAt,
         };
 
-        return sendSuccess(res, userResponse);
+        const features = await featureRepository.findAll();
+
+        return sendSuccess(res, { ...userResponse, features });
+    } catch (error: any) {
+        return sendError(res, error.message);
+    }
+};
+
+export const signOut = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        if (userId) {
+            await logAction(userId, 'LOGOUT', {}, req);
+        }
+        return sendSuccess(res, null, 'Desconectado com sucesso');
     } catch (error: any) {
         return sendError(res, error.message);
     }

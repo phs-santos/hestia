@@ -71,6 +71,14 @@ export const FEATURES_REGISTRY: FeatureConfig[] = [
                 allowedRoles: ['ROOT', 'ADMIN'],
             }
         ]
+    },
+    {
+        id: 'root-management',
+        name: 'Administração',
+        enabled: true,
+        path: '/admin',
+        description: 'Gestão de usuários e permissões do sistema',
+        allowedRoles: ['ROOT'],
     }
 ];
 

@@ -2,13 +2,12 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { LogOut, ChevronRight, Sun, Moon } from 'lucide-react';
+import { LogOut, ChevronRight, Sun, Moon, ChevronLeft } from 'lucide-react';
 import { cn } from '@/utils';
 import { useTheme } from 'next-themes';
+import { useFeatures } from '@/context/FeatureContext';
 import { useSidebarStore } from '@/stores/sidebarStore';
-import { ChevronLeft } from 'lucide-react';
 import { SIDEBAR_CONFIG } from '@/constants/sidebarConfig';
-import { isFeatureEnabled } from '@/config/features';
 
 interface SidebarProps {
 	mobile?: boolean;
@@ -17,6 +16,7 @@ interface SidebarProps {
 
 export function Sidebar({ mobile, onNavigate }: SidebarProps) {
 	const { user, logout } = useAuth();
+	const { canAccess } = useFeatures();
 	const { theme, setTheme } = useTheme();
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -95,10 +95,10 @@ export function Sidebar({ mobile, onNavigate }: SidebarProps) {
 			{/* ------------------------------------------------------------------ */}
 			<nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar">
 				{SIDEBAR_CONFIG
-					.filter(section => !section.featureId || isFeatureEnabled(section.featureId, user?.role as any))
+					.filter(section => !section.featureId || canAccess(section.featureId))
 					.map(section => ({
 						...section,
-						items: section.items.filter(item => !item.featureId || isFeatureEnabled(item.featureId, user?.role as any))
+						items: section.items.filter(item => !item.featureId || canAccess(item.featureId))
 					}))
 					.filter(section => section.items.length > 0)
 					.map((section, idx) => {
