@@ -1,53 +1,14 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
-	LayoutDashboard,
-	FileText,
-	FolderTree,
-	Users,
-	LogOut,
-	ChevronRight,
-
-	FileDown,
-	Video,
-	Zap,
-	Sun,
-	Moon,
-	MessageSquare,
-	BarChart3,
-	Home,
-	Contact,
-	Wrench,
-	LineChart,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { LogOut, ChevronRight, Sun, Moon } from 'lucide-react';
+import { cn } from '@/utils';
 import { useTheme } from 'next-themes';
 import { useSidebarStore } from '@/stores/sidebarStore';
 import { ChevronLeft } from 'lucide-react';
 import { SIDEBAR_CONFIG } from '@/constants/sidebarConfig';
-/* -------------------------------------------------------------------------- */
-/*                                   Types                                    */
-/* -------------------------------------------------------------------------- */
-
-interface SidebarItem {
-	to: string;
-	icon: any;
-	label: string;
-	adminOnly?: boolean;
-	technicianOnly?: boolean;
-	ownerDeveloperOnly?: boolean;
-}
-
-interface SidebarSection {
-	id: string;
-	label: string;
-	adminOnly?: boolean;
-	technicianOnly?: boolean;
-	ownerDeveloperOnly?: boolean;
-	items: SidebarItem[];
-}
+import { isFeatureEnabled } from '@/config/features';
 
 interface SidebarProps {
 	mobile?: boolean;
@@ -133,62 +94,69 @@ export function Sidebar({ mobile, onNavigate }: SidebarProps) {
 			{/* Navigation */}
 			{/* ------------------------------------------------------------------ */}
 			<nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar">
-				{SIDEBAR_CONFIG.map((section, idx) => {
-					return (
-						<div key={section.id} className="space-y-1">
-							{idx > 0 && (
-								<Separator className="my-3 bg-sidebar-border/50" />
-							)}
+				{SIDEBAR_CONFIG
+					.filter(section => !section.featureId || isFeatureEnabled(section.featureId))
+					.map(section => ({
+						...section,
+						items: section.items.filter(item => !item.featureId || isFeatureEnabled(item.featureId))
+					}))
+					.filter(section => section.items.length > 0)
+					.map((section, idx) => {
+						return (
+							<div key={section.id} className="space-y-1">
+								{idx > 0 && (
+									<Separator className="my-3 bg-sidebar-border/50" />
+								)}
 
-							{/* Section Header - Static */}
-							{!isCollapsed && (
-								<div
-									className="w-full flex items-center justify-between px-3 py-1.5"
-								>
-									<p className="text-[10px] font-bold text-sidebar-foreground/40 uppercase tracking-[0.2em]">
-										{section.label}
-									</p>
-								</div>
-							)}
+								{/* Section Header - Static */}
+								{!isCollapsed && (
+									<div
+										className="w-full flex items-center justify-between px-3 py-1.5"
+									>
+										<p className="text-[10px] font-bold text-sidebar-foreground/40 uppercase tracking-[0.2em]">
+											{section.label}
+										</p>
+									</div>
+								)}
 
-							{/* Section Items */}
-							<div className="space-y-1 animate-fade-in">
-								{section.items.map(({ label, to, icon: Icon }) => {
-									const isActive = location.pathname === to;
+								{/* Section Items */}
+								<div className="space-y-1 animate-fade-in">
+									{section.items.map(({ label, to, icon: Icon }) => {
+										const isActive = location.pathname === to;
 
-									return (
-										<NavLink key={to} to={to} onClick={handleNavigate}>
-											<Button
-												variant={isActive ? 'sidebarActive' : 'sidebar'}
-												size="sidebar"
-												className={cn(
-													'w-full group shadow-none transition-all duration-300',
-													isCollapsed ? 'px-0 justify-center' : 'justify-start gap-3',
-													isActive && 'shadow-sm'
-												)}
-												title={isCollapsed ? label : undefined}
-											>
-												<Icon
+										return (
+											<NavLink key={to} to={to} onClick={handleNavigate}>
+												<Button
+													variant={isActive ? 'sidebarActive' : 'sidebar'}
+													size="sidebar"
 													className={cn(
-														'h-5 w-5 transition-colors shrink-0',
-														isActive
-															? 'text-foreground'
-															: 'text-sidebar-foreground/70 group-hover:text-primary',
-														isCollapsed && 'w-6 h-6'
+														'w-full group shadow-none transition-all duration-300',
+														isCollapsed ? 'px-0 justify-center' : 'justify-start gap-3',
+														isActive && 'shadow-sm'
 													)}
-												/>
-												{!isCollapsed && <span className="flex-1 text-left">{label}</span>}
-												{(isActive && !isCollapsed) && (
-													<ChevronRight className="h-4 w-4 text-primary/60" />
-												)}
-											</Button>
-										</NavLink>
-									);
-								})}
+													title={isCollapsed ? label : undefined}
+												>
+													<Icon
+														className={cn(
+															'h-5 w-5 transition-colors shrink-0',
+															isActive
+																? 'text-foreground'
+																: 'text-sidebar-foreground/70 group-hover:text-primary',
+															isCollapsed && 'w-6 h-6'
+														)}
+													/>
+													{!isCollapsed && <span className="flex-1 text-left">{label}</span>}
+													{(isActive && !isCollapsed) && (
+														<ChevronRight className="h-4 w-4 text-primary/60" />
+													)}
+												</Button>
+											</NavLink>
+										);
+									})}
+								</div>
 							</div>
-						</div>
-					);
-				})}
+						);
+					})}
 			</nav>
 
 			{/* ------------------------------------------------------------------ */}

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { MainLayout } from '@/layouts/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Plus, Activity, MoreVertical, Globe, Trash2, Edit, Cpu, Settings } from 'lucide-react';
-import { monitoringService, Service } from '@/services/monitoringService';
+import { monitoringService, Service } from '@/features/monitoring';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';

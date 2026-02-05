@@ -1,4 +1,4 @@
-import { api, handleApiError } from "@/lib/api";
+import { api, handleApiError } from "@/services/api";
 
 // Interface para o formato padrão de resposta do backend
 export interface ApiResponse<T> {

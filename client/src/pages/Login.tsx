@@ -2,8 +2,8 @@ import * as z from 'zod'
 import { useState } from 'react'
 import { Navigate } from "react-router-dom";
 import { useForm } from 'react-hook-form'
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { useAuth } from '@/contexts/AuthContext'
+import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth } from '@/context/AuthContext'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

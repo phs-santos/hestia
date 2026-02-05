@@ -1,13 +1,13 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import { useAuth } from "@/contexts/AuthContext";
-import { RootRoute } from "@/components/auth/RootRoute";
+import { useAuth } from "@/context/AuthContext";
+import { RootRoute } from "@/routes/RootRoute";
 
 const Login = lazy(() => import("@/pages/Login"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Servers = lazy(() => import("@/pages/Servers"));
-const Services = lazy(() => import("@/pages/Services"));
+const BlankPage = lazy(() => import("@/pages/BlankPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 export default function AppRoutes() {
@@ -47,6 +47,8 @@ export default function AppRoutes() {
                             <Servers />
                         </RootRoute>
                     } />
+
+                    <Route path="/blank" element={<BlankPage />} />
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>

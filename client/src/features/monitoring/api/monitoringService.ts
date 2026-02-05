@@ -1,4 +1,4 @@
-import { createBaseService } from "./baseService";
+import { createBaseService } from "@/services/baseService";
 
 // Endpoints sincronizados com o backend (padronizados para plural)
 const serverService = createBaseService<Server, Partial<Server>>('/servers');

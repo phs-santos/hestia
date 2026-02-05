@@ -2,12 +2,12 @@ import { Notifications } from "@/components/ui/notifications";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeProvider";
 
-import { SplashScreen } from "@/components/layout/SplashScreen";
+import { SplashScreen } from "@/layouts/SplashScreen";
 import { useState } from "react";
-import AppRoutes from "./AppRoutes";
+import AppRoutes from "./routes/AppRoutes";
 
 const queryClient = new QueryClient();
 

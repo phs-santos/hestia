@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService, AuthUser } from '@/services/authService';
+import { authService, AuthUser } from '@/features/auth';
 import { useInvalidateCache } from '@/hooks/use-data-loader';
 
 interface AuthContextType {

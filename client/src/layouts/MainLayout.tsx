@@ -1,11 +1,11 @@
 import { ReactNode, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { Sidebar } from './Sidebar';
 import { MobileSidebar } from './MobileSidebar';
 
 import { useSidebarStore } from '@/stores/sidebarStore';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 interface MainLayoutProps {
 	children: ReactNode;

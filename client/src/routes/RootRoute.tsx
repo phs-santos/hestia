@@ -1,12 +1,12 @@
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 
-interface AdminRouteProps {
+interface Props {
 	children: ReactNode;
 }
 
-export function AdminRoute({ children }: AdminRouteProps) {
+export function RootRoute({ children }: Props) {
 	const { user, isLoading } = useAuth();
 
 	if (isLoading) {
@@ -21,7 +21,7 @@ export function AdminRoute({ children }: AdminRouteProps) {
 		return <Navigate to="/login" replace />;
 	}
 
-	if (user.role !== 'ADMIN') {
+	if (user.role !== 'ROOT') {
 		return <Navigate to="/unauthorized" replace />;
 	}
 

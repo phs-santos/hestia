@@ -1,4 +1,4 @@
-import { api, apiAuth } from "@/lib/api";
+import { api, apiAuth } from "@/services/api";
 
 export interface AuthUser {
     id: string;
