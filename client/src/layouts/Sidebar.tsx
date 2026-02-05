@@ -95,10 +95,10 @@ export function Sidebar({ mobile, onNavigate }: SidebarProps) {
 			{/* ------------------------------------------------------------------ */}
 			<nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar">
 				{SIDEBAR_CONFIG
-					.filter(section => !section.featureId || isFeatureEnabled(section.featureId))
+					.filter(section => !section.featureId || isFeatureEnabled(section.featureId, user?.role as any))
 					.map(section => ({
 						...section,
-						items: section.items.filter(item => !item.featureId || isFeatureEnabled(item.featureId))
+						items: section.items.filter(item => !item.featureId || isFeatureEnabled(item.featureId, user?.role as any))
 					}))
 					.filter(section => section.items.length > 0)
 					.map((section, idx) => {

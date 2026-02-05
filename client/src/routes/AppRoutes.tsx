@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import { useAuth } from "@/context/AuthContext";
 import { RootRoute } from "@/routes/RootRoute";
+import { FeatureGuard } from "@/components/FeatureGuard";
 
 import { useSeleneWidget } from "@/hooks/use-selene-widget";
 
@@ -51,13 +52,17 @@ export default function AppRoutes() {
 
                     <Route path="/dashboard" element={
                         <RootRoute>
-                            <Dashboard />
+                            <FeatureGuard featureId="dashboard">
+                                <Dashboard />
+                            </FeatureGuard>
                         </RootRoute>
                     } />
 
                     <Route path="/servers" element={
                         <RootRoute>
-                            <Servers />
+                            <FeatureGuard featureId="monitoring-servers">
+                                <Servers />
+                            </FeatureGuard>
                         </RootRoute>
                     } />
 
@@ -69,7 +74,9 @@ export default function AppRoutes() {
 
                     <Route path="/services" element={
                         <RootRoute>
-                            <Services />
+                            <FeatureGuard featureId="monitoring-services">
+                                <Services />
+                            </FeatureGuard>
                         </RootRoute>
                     } />
 

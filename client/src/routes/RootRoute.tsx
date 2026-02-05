@@ -21,9 +21,5 @@ export function RootRoute({ children }: Props) {
 		return <Navigate to="/login" replace />;
 	}
 
-	if (user.role !== 'ROOT') {
-		return <Navigate to="/unauthorized" replace />;
-	}
-
 	return <>{children}</>;
 }

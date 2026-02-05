@@ -1,9 +1,12 @@
+export type UserRole = 'ROOT' | 'ADMIN' | 'USER';
+
 export interface FeatureConfig {
     id: string;
     name: string;
     enabled: boolean;
     path: string;
     description?: string;
+    allowedRoles?: UserRole[];
     subfeatures?: FeatureConfig[];
 }
 
@@ -19,6 +22,7 @@ export const FEATURES_REGISTRY: FeatureConfig[] = [
         enabled: true,
         path: '/dashboard',
         description: 'Painel principal de indicadores',
+        allowedRoles: ['ROOT', 'ADMIN', 'USER'],
     },
     {
         id: 'monitoring',
@@ -26,18 +30,21 @@ export const FEATURES_REGISTRY: FeatureConfig[] = [
         enabled: true,
         path: '/servers',
         description: 'Gestão de servidores e serviços',
+        allowedRoles: ['ROOT', 'ADMIN'],
         subfeatures: [
             {
                 id: 'monitoring-servers',
                 name: 'Servidores',
                 enabled: true,
                 path: '/servers',
+                allowedRoles: ['ROOT', 'ADMIN'],
             },
             {
                 id: 'monitoring-services',
                 name: 'Serviços',
                 enabled: true,
                 path: '/services',
+                allowedRoles: ['ROOT', 'ADMIN'],
             }
         ]
     },
@@ -47,18 +54,21 @@ export const FEATURES_REGISTRY: FeatureConfig[] = [
         enabled: false,
         path: '/products',
         description: 'Gestão de catálogo de produtos',
+        allowedRoles: ['ROOT', 'ADMIN', 'USER'],
         subfeatures: [
             {
                 id: 'products-list',
                 name: 'Ver Produtos',
                 enabled: true,
                 path: '/products',
+                allowedRoles: ['ROOT', 'ADMIN', 'USER'],
             },
             {
                 id: 'products-inventory',
                 name: 'Estoque',
                 enabled: false,
                 path: '/products/inventory',
+                allowedRoles: ['ROOT', 'ADMIN'],
             }
         ]
     }
@@ -79,14 +89,24 @@ const findFeature = (features: FeatureConfig[], id: string): FeatureConfig | und
 };
 
 /**
- * Returns only enabled top-level features.
+ * Returns only enabled top-level features accessible by the user's role.
  */
-export const getActiveFeatures = () => FEATURES_REGISTRY.filter(f => f.enabled);
+export const getActiveFeatures = (userRole?: UserRole) => {
+    return FEATURES_REGISTRY.filter(f => {
+        if (!f.enabled) return false;
+        if (!userRole) return false;
+        if (f.allowedRoles && !f.allowedRoles.includes(userRole)) return false;
+        return true;
+    });
+};
 
 /**
- * Checks if a specific feature (or subfeature) is enabled.
+ * Checks if a specific feature (or subfeature) is enabled and accessible.
  */
-export const isFeatureEnabled = (id: string) => {
+export const isFeatureEnabled = (id: string, userRole?: UserRole) => {
     const feature = findFeature(FEATURES_REGISTRY, id);
-    return feature?.enabled || false;
+    if (!feature?.enabled) return false;
+    if (!userRole) return false;
+    if (feature.allowedRoles && !feature.allowedRoles.includes(userRole)) return false;
+    return true;
 };
