@@ -22,6 +22,13 @@
       "when": 1770177687434,
       "tag": "0002_perpetual_susan_delgado",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770270237331,
+      "tag": "0003_tearful_blade",
+      "breakpoints": true
     }
   ]
 }

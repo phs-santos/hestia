@@ -4,13 +4,26 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { RootRoute } from "@/routes/RootRoute";
 
+import { useSeleneWidget } from "@/hooks/use-selene-widget";
+
 const Login = lazy(() => import("@/pages/Login"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Servers = lazy(() => import("@/pages/Servers"));
+const Servers = lazy(() => import("@/features/monitoring/pages/Servers"));
+const ServerDetail = lazy(() => import("@/features/monitoring/pages/ServerDetail"));
+const Services = lazy(() => import("@/features/monitoring/pages/Services"));
+const ServiceDetail = lazy(() => import("@/features/monitoring/pages/ServiceDetail"));
+
 const BlankPage = lazy(() => import("@/pages/BlankPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 export default function AppRoutes() {
+    const { isAuthenticated } = useAuth();
+
+    useSeleneWidget(!!isAuthenticated, {
+        apiKey: "sk_I8MnrjIifpDJoJVoe8j6xu2w",
+        widget: "support",
+    });
+
     function LoadingSpinner() {
         return (
             <div className="flex min-h-screen items-center justify-center bg-background">
@@ -45,6 +58,24 @@ export default function AppRoutes() {
                     <Route path="/servers" element={
                         <RootRoute>
                             <Servers />
+                        </RootRoute>
+                    } />
+
+                    <Route path="/servers/:id" element={
+                        <RootRoute>
+                            <ServerDetail />
+                        </RootRoute>
+                    } />
+
+                    <Route path="/services" element={
+                        <RootRoute>
+                            <Services />
+                        </RootRoute>
+                    } />
+
+                    <Route path="/servers/:serverId/services/:serviceId" element={
+                        <RootRoute>
+                            <ServiceDetail />
                         </RootRoute>
                     } />
 
